@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from JsonCKExp import JsonCKExp
+from PULL.PullChain import PullChain
 
 class JsonCK:
     SEPERATOR_OR = "||";
@@ -41,6 +42,27 @@ class JsonCK:
         if result.endswith(' + '): result = result[:-3]
         result += "\'.PULL(" + self.genPullExpRef() + ")"
         return result
+
+    def calculateBoolean(self, first, op, second):
+        if op == self.SYMBOL_AND: return first and second
+        elif op == self.SYMBOL_OR: return first or second
+        else: return False
+
+    def getOpFromExpList(self, expName):
+        for exp in self.jsonCKExpList:
+            if exp.getName() == expName:
+                return exp.getOperator()
+        return None
+
+    def check(self, text):
+        localResult = True
+        pChain = PullChain(self.pullExp)
+        pChain.check(text)
+        for obj in pChain.getPullChainCurrent().getChildren():
+            localResult = self.calculateBoolean(localResult, \
+            self.getOpFromExpList(obj.getName()), obj.getResult())
+        self.result = localResult
+        return self.result
 
     def __str__(self):
         result  = "==== JSONCK INFO ====\n"
