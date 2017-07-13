@@ -5,6 +5,7 @@ import re
 class JsonCKExp:
     REG_JSONCK_EXPRESS = r"""\s*(".*")\s*([!<=>]+)\s*(.*)\s*"""
     REG_JSONCK_VAR_TYPE_INTEGER = r"^\d+$|\[\s*\d+(\s*,\s*\d+)*\]"
+    REG_JSONCK_VAR_TYPE_BOOLEAN = r"true|false"
 
     FORMAT_PULL_EXP_STRING  = """%s: r'%s\s*:\s*"([a-zA-Z0-9\\._-]+)"\s*'.PULL({0}%s)"""
     FORMAT_PULL_EXP_INTEGER = """%s: r'%s\s*:\s*([0-9]+)\s*'.PULL({0}%s)"""
@@ -29,7 +30,7 @@ class JsonCKExp:
 
     def getType(self, value):
         if re.search(self.REG_JSONCK_VAR_TYPE_INTEGER, value): return self.TYPE_INTEGER
-        elif value == self.BOOLEAN_TRUE or value == self.BOOLEAN_FALSE: return self.TYPE_BOOLEAN
+        elif re.search(self.REG_JSONCK_VAR_TYPE_BOOLEAN, value): return self.TYPE_BOOLEAN
         else: return self.TYPE_STRING
 
     def parserJsonCKExp(self, expression):
